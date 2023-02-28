@@ -61,11 +61,11 @@ fn match_ext(p: &Path, extes: &[&str]) -> bool {
 fn proceed_created_files(paths: Vec<PathBuf>) {
     for path in paths.into_iter() {
         let should_remove = if match_ext(&path, &["png", "bmp", "pnm", "tiff", "tif"]) {
-            convert_file_to_webp(&path, WebPQuality::lossless());
-            std::env::args().any(|c| c.eq("-rll")) //remove lossless
+            convert_file_to_webp(&path, WebPQuality::lossless())
+                .is_some() && std::env::args().any(|c| c.eq("-rll")) //remove lossless
         } else if match_ext(&path, &["jpg", "jpeg"]) {
-            convert_file_to_webp(&path, WebPQuality::lossy(92));
-            std::env::args().any(|c| c.eq("-rls")) //remove lossy
+            convert_file_to_webp(&path, WebPQuality::lossy(92))
+                .is_some() && std::env::args().any(|c| c.eq("-rls")) //remove lossy
         } else {
             false
         };
