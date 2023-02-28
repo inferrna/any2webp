@@ -4,7 +4,7 @@ Daemon for converting any newly created image in particular directory to webp on
 Supported source images: png, pnm, tiff, jpeg, bmp.
 
 Usage:
-`any2webp /pat/to/images/dir [-rll] -[rls]`
+`any2webp /pat/to/images/dir [-rll] [-rls]`
 where **-rll** is an optional flag to remove lossless images after conversion to webp
 and **-rls** means the same for lossy images.
 
