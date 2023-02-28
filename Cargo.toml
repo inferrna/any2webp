@@ -1,0 +1,15 @@
+[package]
+name = "any2webp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+image = { version = "0.24", default-features = false, features = ["png", "jpeg", "tiff", "pnm", "bmp", "webp-encoder"] }
+notify = "5"
+glob = "0.3"
+
+[profile.release]
+lto = true
+panic = "abort"
+codegen-units = 1
+strip = true
