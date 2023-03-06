@@ -1,6 +1,6 @@
 use std::ffi::OsStr;
 use std::fs;
-use std::fs::File;
+use std::fs::{create_dir, File};
 use std::io::BufWriter;
 use std::path::{Path, PathBuf};
 use image::codecs::webp::{WebPEncoder, WebPQuality};
@@ -8,11 +8,14 @@ use notify::{Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watche
 use notify::event::CreateKind;
 
 fn main() {
-    let path = std::env::args()
+    let path_str = std::env::args()
         .nth(1)
         .expect("Argument 1 needs to be a path");
-
-    println!("watching {}", path);
+    println!("watching {}", &path_str);
+    let path = Path::new(&path_str);
+    if !path.exists() {
+        create_dir(path).unwrap();
+    }
     if let Err(e) = watch(path) {
         println!("error: {:?}", e)
     }
@@ -58,14 +61,18 @@ fn match_ext(p: &Path, extes: &[&str]) -> bool {
     false
 }
 
+fn arg_contains(p: &str) -> bool {
+    std::env::args().any(|c| c.eq(p))
+}
+
 fn proceed_created_files(paths: Vec<PathBuf>) {
     for path in paths.into_iter() {
         let should_remove = if match_ext(&path, &["png", "bmp", "pnm", "tiff", "tif"]) {
             convert_file_to_webp(&path, WebPQuality::lossless())
-                .is_some() && std::env::args().any(|c| c.eq("-rll")) //remove lossless
+                .is_some() && arg_contains("-rll") //remove lossless
         } else if match_ext(&path, &["jpg", "jpeg"]) {
             convert_file_to_webp(&path, WebPQuality::lossy(92))
-                .is_some() && std::env::args().any(|c| c.eq("-rls")) //remove lossy
+                .is_some() && arg_contains("-rls") //remove lossy
         } else {
             false
         };
